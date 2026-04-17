@@ -72,7 +72,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          body: "Release haproxy ${{ steps.get_version.outputs.VERSION }}.  \n source: https://github.com/haproxy/haproxy/releases/tag/${{ steps.get_version.outputs.VERSION }}"
+          body: "Release haproxy ${{ steps.get_version.outputs.VERSION }}."
           files: |
             /tmp/amd64/haproxy-amd64
             /tmp/amd64/haproxy-amd64.tar.xz
