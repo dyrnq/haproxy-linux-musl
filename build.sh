@@ -169,12 +169,16 @@ if [ "${arch}" = "aarch64" ]; then
     lua_libs="";
 fi
 
+quic_args=""
+if [ "${USE_QUIC}" = "1" ]; then
+    quic_args="USE_QUIC=1"
+fi
 
 make -j$(nproc) \
 TARGET=linux-musl \
 USE_PTHREAD_EMULATION=1 \
 USE_GETADDRINFO=1  \
-USE_QUIC=${USE_QUIC} \
+${quic_args} \
 USE_PCRE2_JIT=1 \
 USE_PCRE2=1 PCRE2_INC=$INSTALL_DIR/include PCRE2_LIB=$INSTALL_DIR/lib \
 ${ssl_args} ${lua_args} \

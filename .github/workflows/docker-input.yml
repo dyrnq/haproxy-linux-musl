@@ -59,6 +59,8 @@ jobs:
       - name: Test Dynamic alignment version
         run: |
           echo ${{ steps.alignment.outputs.OPENSSL_VERSION }}
+          echo ${{ steps.alignment.outputs.USE_QUIC }}
+          echo "--HAPROXY_VERSION ${{ github.event.inputs.version }}"
 
       - name: Build dockerfile (without push)
         run: |
