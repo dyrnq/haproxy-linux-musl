@@ -13,7 +13,7 @@ docker_file=${docker_file:-./Dockerfile}
 
 HAPROXY_VERSION="v3.2.0"
 PCRE2_VERSION="10.47"
-OPENSSL_VERSION="3.6.2"
+OPENSSL_VERSION="3.5.6"
 ZLIB_VERSION="v1.3.2"
 LUA_VERSION="v5.4.8"
 
