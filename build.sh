@@ -38,7 +38,7 @@ WORK_DIR="/tmp/haproxy-build"
 INSTALL_DIR="/opt/haproxy-static"
 mkdir -p $WORK_DIR $INSTALL_DIR
 
-apk add --no-cache build-base libtool automake autoconf linux-headers git perl cmake readline-dev coreutils
+apk add --no-cache build-base libtool automake autoconf linux-headers git perl cmake readline-dev coreutils musl-dev linux-headers
 
 rm -rf ${WORK_DIR:?}/*
 pushd $WORK_DIR >/dev/null 2>&1 || exit 1
