@@ -89,10 +89,10 @@ while [ $# -gt 0 ]; do
 done
 
 
-latest_tag=" --tag ${repo}/${image_name}:${version}"
+latest_tag=" --tag ${repo}/${image_name}:${HAPROXY_VERSION}"
 
 if [ "1" = "${USE_OPENSSL_AWSLC}" ]; then
-    latest_tag=" --tag ${repo}/${image_name}:${version}-awslc"
+    latest_tag=" --tag ${repo}/${image_name}:${HAPROXY_VERSION}-awslc"
 fi
 
 docker buildx build \
