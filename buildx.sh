@@ -85,7 +85,7 @@ done
 latest_tag=" --tag ${repo}/${image_name}:${version}"
 
 if [ "1" = "${USE_OPENSSL_AWSLC}" ]; then
-latest_tag=" --tag ${repo}/${image_name}:awslc-${version}"
+    latest_tag=" --tag ${repo}/${image_name}:${version}-awslc"
 fi
 
 docker buildx build \
