@@ -159,12 +159,15 @@ LDFLAGS="-static -no-pie" \
 ADDLIB="${WORK_DIR}/lua/liblua.a ${ssl_libs} ${INSTALL_DIR}/lib/libpcre2-8.a ${INSTALL_DIR}/lib/libz.a -lpthread -ldl" \
 CC="gcc -static" \
 CFLAGS="-fvect-cost-model=very-cheap"
-set +x
+
 
 echo "Verification:"
 file ./haproxy
-ldd ./haproxy || true
+#ldd ./haproxy || true
 if ./haproxy -vv; then
   make PREFIX=$INSTALL_DIR install
+else
+  echo "./haproxy -vv Error, will not install"
 fi
+set +x
 popd || exit 1
