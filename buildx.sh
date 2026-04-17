@@ -18,6 +18,7 @@ ZLIB_VERSION="v1.3.2"
 LUA_VERSION="v5.4.8"
 OPENSSL_AWSLC_VERSION="v1.72.0"
 USE_OPENSSL_AWSLC="0"
+USE_QUIC="0"
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -81,6 +82,10 @@ while [ $# -gt 0 ]; do
             USE_OPENSSL_AWSLC="$2"
             shift
             ;;
+        --USE_QUIC)
+            USE_QUIC="$2"
+            shift
+            ;;
         --*)
             echo "Illegal option $1"
             ;;
@@ -105,6 +110,7 @@ docker buildx build \
 --build-arg LUA_VERSION=${LUA_VERSION} \
 --build-arg OPENSSL_AWSLC_VERSION=${OPENSSL_AWSLC_VERSION} \
 --build-arg USE_OPENSSL_AWSLC=${USE_OPENSSL_AWSLC} \
+--build-arg USE_QUIC=${USE_QUIC} \
 --file ${docker_file} . \
 ${latest_tag}
 

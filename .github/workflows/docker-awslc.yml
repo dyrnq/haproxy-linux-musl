@@ -44,7 +44,7 @@ jobs:
       #   run: |
       #     HAPROXY_VERSION="${{ matrix.vers }}"
       #     BASE_VER=${HAPROXY_VERSION#v}
-      #     OPENSSL_VERSION=$(docker run --rm haproxy:${BASE_VER}-alpine -vvv   |  grep "OpenSSL" |grep version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-z]?')
+      #     OPENSSL_VERSION=$(docker run --rm haproxy:${BASE_VER}-alpine -vv   |  grep "OpenSSL" |grep version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-z]?')
       #     echo ::set-output name=OPENSSL_VERSION::${OPENSSL_VERSION}
 
       # - name: Test Dynamic alignment version
@@ -60,6 +60,7 @@ jobs:
           # fi
 
           dynamic_args+=("--USE_OPENSSL_AWSLC" "1")
+          dynamic_args+=("--USE_QUIC" "1")
 
           ./buildx.sh --push false --repo ${{ secrets.DOCKER_USERNAME }} --HAPROXY_VERSION ${{ matrix.vers }} ${dynamic_args[*]}
 
@@ -78,4 +79,5 @@ jobs:
           #   dynamic_args+(--OPENSSL_VERSION ${OPENSSL_VERSION})
           # fi
           dynamic_args+=("--USE_OPENSSL_AWSLC" "1")
+          dynamic_args+=("--USE_QUIC" "1")
           ./buildx.sh --push true --repo ${{ secrets.DOCKER_USERNAME }} --HAPROXY_VERSION ${{ matrix.vers }} ${dynamic_args[*]}
