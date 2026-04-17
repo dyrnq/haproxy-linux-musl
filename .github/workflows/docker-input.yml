@@ -1,0 +1,86 @@
+name: docker-ci-input
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'version'
+        required: true
+        default: 'v3.2.15'
+      USE_OPENSSL_AWSLC:
+        description: 'USE_OPENSSL_AWSLC'
+        required: true
+        default: '0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+        fail-fast: false
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v4
+      -
+        name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v4
+      -
+        name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+
+      - name: Dynamic alignment version
+        id: alignment
+        run: |
+          HAPROXY_VERSION="${{ github.event.inputs.version }}"
+          BASE_VER=${HAPROXY_VERSION#v}
+          OPENSSL_VERSION=$(docker run --rm haproxy:${BASE_VER}-alpine -vvv   |  grep "OpenSSL" |grep version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-z]?')
+          echo ::set-output name=OPENSSL_VERSION::${OPENSSL_VERSION}
+
+      - name: Test Dynamic alignment version
+        run: |
+          echo ${{ steps.alignment.outputs.OPENSSL_VERSION }}
+
+      - name: Build dockerfile (without push)
+        run: |
+          dynamic_args=()
+          OPENSSL_VERSION="${{ steps.alignment.outputs.OPENSSL_VERSION }}"
+          if [ -n "${OPENSSL_VERSION}" ]; then
+            dynamic_args+=("--OPENSSL_VERSION" "${OPENSSL_VERSION}")
+          fi
+
+          if [ "${{ github.event.inputs.USE_OPENSSL_AWSLC }}" = "1" ]; then
+            dynamic_args+=("--USE_OPENSSL_AWSLC" "1")
+          fi
+
+          ./buildx.sh --push false --repo ${{ secrets.DOCKER_USERNAME }} --HAPROXY_VERSION ${{ github.event.inputs.version }} ${dynamic_args[*]}
+
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build dockerfile (with push)
+        run: |
+          dynamic_args=()
+          OPENSSL_VERSION="${{ steps.alignment.outputs.OPENSSL_VERSION }}"
+          if [ -n "${OPENSSL_VERSION}" ]; then
+            dynamic_args+=("--OPENSSL_VERSION" "${OPENSSL_VERSION}")
+          fi
+
+          if [ "${{ github.event.inputs.USE_OPENSSL_AWSLC }}" = "1" ]; then
+            dynamic_args+=("--USE_OPENSSL_AWSLC" "1")
+          fi
+
+          ./buildx.sh --push true --repo ${{ secrets.DOCKER_USERNAME }} --HAPROXY_VERSION ${{ github.event.inputs.version }} ${dynamic_args[*]}
