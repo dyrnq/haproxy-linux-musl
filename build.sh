@@ -107,7 +107,7 @@ USE_OPENSSL=1 SSL_INC=$INSTALL_DIR/include SSL_LIB=${INSTALL_DIR}/lib64 \
 USE_ZLIB=1 ZLIB_INC=$INSTALL_DIR/include ZLIB_LIB=$INSTALL_DIR/lib \
 USE_LUA=1 LUA_INC=${WORK_DIR}/lua LUA_LIB=${WORK_DIR}/lua \
 LDFLAGS="-static -no-pie" \
-ADDLIB="${WORK_DIR}/liblua.a ${INSTALL_DIR}/lib64/libssl.a ${INSTALL_DIR}/lib64/libcrypto.a ${INSTALL_DIR}/lib/libpcre2-8.a ${INSTALL_DIR}/lib/libz.a -lpthread -ldl" \
+ADDLIB="${WORK_DIR}/lua/liblua.a ${INSTALL_DIR}/lib64/libssl.a ${INSTALL_DIR}/lib64/libcrypto.a ${INSTALL_DIR}/lib/libpcre2-8.a ${INSTALL_DIR}/lib/libz.a -lpthread -ldl" \
 CC="gcc -static" \
 CFLAGS="-fvect-cost-model=very-cheap"
 set +x
