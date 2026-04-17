@@ -45,8 +45,16 @@ pushd $WORK_DIR >/dev/null 2>&1 || exit 1
 git clone --recursive --depth 1 -b $ZLIB_VERSION            https://github.com/madler/zlib.git
 git clone --recursive --depth 1 -b pcre2-$PCRE2_VERSION     https://github.com/PCRE2Project/pcre2.git
 git clone --recursive --depth 1 -b openssl-$OPENSSL_VERSION https://github.com/openssl/openssl.git
-git clone --recursive --depth 1 -b $HAPROXY_VERSION         https://github.com/haproxy/haproxy.git
+#git clone --recursive --depth 1 -b $HAPROXY_VERSION         https://github.com/haproxy/haproxy.git
 git clone --recursive --depth 1 -b $LUA_VERSION             https://github.com/lua/lua.git
+
+
+BASE_VER=${HAPROXY_VERSION#v}
+MAJOR_VER=$(echo "$BASE_VER" | cut -d. -f1-2)
+HAPROXY_GIT_URL="https://git.haproxy.org/git/haproxy-${MAJOR_VER}.git/"
+echo "Targeting haproxy ${HAPROXY_VERSION} Repo: $HAPROXY_GIT_URL"
+git clone --recursive --depth 1 --branch "v$BASE_VER" "$HAPROXY_GIT_URL" "haproxy-$BASE_VER"
+
 
 echo "Building Zlib (Static)..."
 pushd zlib >/dev/null 2>&1 || exit 1
@@ -85,7 +93,7 @@ popd || exit 1
 
 
 echo "Building HAProxy (Full Static)..."
-pushd haproxy >/dev/null 2>&1 || exit 1
+pushd "haproxy-$BASE_VER" >/dev/null 2>&1 || exit 1
 
 set -x
 make -j$(nproc) \
