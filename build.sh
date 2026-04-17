@@ -140,7 +140,7 @@ else
 fi
 
 if [ "${USE_OPENSSL_AWSLC}" = "1" ];then
-    ssl_args="USE_OPENSSL=1 SSL_INC=$INSTALL_DIR/include SSL_LIB=${INSTALL_DIR}/lib"
+    ssl_args="USE_OPENSSL_AWSLC=1 SSL_INC=$INSTALL_DIR/include SSL_LIB=${INSTALL_DIR}/lib"
     ssl_libs="${INSTALL_DIR}/lib/libssl.a ${INSTALL_DIR}/lib/libcrypto.a"
 fi
 
@@ -157,8 +157,8 @@ USE_ZLIB=1 ZLIB_INC=$INSTALL_DIR/include ZLIB_LIB=$INSTALL_DIR/lib \
 USE_LUA=1 LUA_INC=${WORK_DIR}/lua LUA_LIB=${WORK_DIR}/lua \
 LDFLAGS="-static -no-pie" \
 ADDLIB="${WORK_DIR}/lua/liblua.a ${ssl_libs} ${INSTALL_DIR}/lib/libpcre2-8.a ${INSTALL_DIR}/lib/libz.a -lpthread -ldl" \
-CC="gcc -static" \
-CFLAGS="-fvect-cost-model=very-cheap"
+CC="gcc -static"
+#CFLAGS="-fvect-cost-model=very-cheap"
 
 
 echo "Verification:"
