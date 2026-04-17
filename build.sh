@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -Eeo pipefail
 HAPROXY_VERSION="v3.2.0"
 PCRE2_VERSION="10.47"
 OPENSSL_VERSION="3.6.2"
@@ -52,6 +52,8 @@ echo "Building Zlib (Static)..."
 pushd zlib >/dev/null 2>&1 || exit 1
 ./configure --static --prefix=$INSTALL_DIR
 make -j$(nproc) install
+echo "Building Zlib end"
+tree ${INSTALL_DIR}
 popd || exit 1
 
 
@@ -60,6 +62,8 @@ pushd pcre2 >/dev/null 2>&1 || exit 1
 ./autogen.sh
 ./configure --prefix=$INSTALL_DIR --enable-pcre2-8 --enable-jit --disable-shared
 make -j$(nproc) install
+echo "Building PCRE2 end"
+tree ${INSTALL_DIR}
 popd || exit 1
 
 echo "Building OpenSSL (Static)..."
@@ -67,19 +71,23 @@ pushd openssl >/dev/null 2>&1 || exit 1
 ./config --prefix=$INSTALL_DIR -static
 make -j"$(nproc)"
 make -j$(nproc) install_sw
+echo "Building OpenSSL end"
+tree ${INSTALL_DIR}
 popd || exit 1
 
 
 echo "Building lua"
 pushd lua >/dev/null 2>&1 || exit 1
 make -j"$(nproc)"
+echo "Building lua end"
+tree .
 popd || exit 1
 
 
 echo "Building HAProxy (Full Static)..."
 pushd haproxy >/dev/null 2>&1 || exit 1
 
-
+set -x
 make -j$(nproc) \
 TARGET=linux-musl \
 USE_PTHREAD_EMULATION=1 \
@@ -94,6 +102,7 @@ LDFLAGS="-static -no-pie" \
 ADDLIB="${WORK_DIR}/liblua.a ${INSTALL_DIR}/lib64/libssl.a ${INSTALL_DIR}/lib64/libcrypto.a ${INSTALL_DIR}/lib/libpcre2-8.a ${INSTALL_DIR}/lib/libz.a -lpthread -ldl" \
 CC="gcc -static" \
 CFLAGS="-fvect-cost-model=very-cheap"
+set +x
 
 echo "Verification:"
 file ./haproxy
