@@ -13,7 +13,7 @@ ZLIB_VERSION=${ZLIB_VERSION:-v1.3.2} \
 LUA_VERSION=${LUA_VERSION:-v5.4.8}
 
 RUN apk add --no-cache curl wget bash
-ADD ./build.sh
+
 COPY ./build.sh /build.sh
 RUN /bin/bash /build.sh \
 --HAPROXY_VERSION ${HAPROXY_VERSION} \
