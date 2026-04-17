@@ -58,7 +58,7 @@ jobs:
           #   dynamic_args+=(--OPENSSL_VERSION ${OPENSSL_VERSION})
           # fi
 
-          dynamic_args+=(--USE_OPENSSL_AWSLC 1)
+          dynamic_args+=("--USE_OPENSSL_AWSLC" "1")
 
           ./buildx.sh --push false --repo ${{ secrets.DOCKER_USERNAME }} --HAPROXY_VERSION ${{ matrix.vers }} ${dynamic_args[*]}
 
@@ -76,5 +76,5 @@ jobs:
           # if [ -n "${OPENSSL_VERSION}" ]; then
           #   dynamic_args+(--OPENSSL_VERSION ${OPENSSL_VERSION})
           # fi
-          dynamic_args+=(--USE_OPENSSL_AWSLC 1)
+          dynamic_args+=("--USE_OPENSSL_AWSLC" "1")
           ./buildx.sh --push true --repo ${{ secrets.DOCKER_USERNAME }} --HAPROXY_VERSION ${{ matrix.vers }} ${dynamic_args[*]}

@@ -48,18 +48,18 @@ apk add --no-cache build-base libtool automake autoconf linux-headers git perl c
 
 rm -rf ${WORK_DIR:?}/*
 pushd $WORK_DIR >/dev/null 2>&1 || exit 1
-git clone --recursive --depth 1 -b $ZLIB_VERSION            https://github.com/madler/zlib.git
-git clone --recursive --depth 1 -b pcre2-$PCRE2_VERSION     https://github.com/PCRE2Project/pcre2.git
-git clone --recursive --depth 1 -b openssl-$OPENSSL_VERSION https://github.com/openssl/openssl.git
-#git clone --recursive --depth 1 -b $HAPROXY_VERSION         https://github.com/haproxy/haproxy.git
-git clone --recursive --depth 1 -b $LUA_VERSION             https://github.com/lua/lua.git
-git clone --recursive --depth 1 -b $OPENSSL_AWSLC_VERSION   https://github.com/aws/aws-lc.git
+while true; do git clone --recursive --depth 1 -b $ZLIB_VERSION            https://github.com/madler/zlib.git           && break; done
+while true; do git clone --recursive --depth 1 -b pcre2-$PCRE2_VERSION     https://github.com/PCRE2Project/pcre2.git    && break; done
+while true; do git clone --recursive --depth 1 -b openssl-$OPENSSL_VERSION https://github.com/openssl/openssl.git       && break; done
+while true; do git clone --recursive --depth 1 -b $LUA_VERSION             https://github.com/lua/lua.git               && break; done
+while true; do git clone --recursive --depth 1 -b $OPENSSL_AWSLC_VERSION   https://github.com/aws/aws-lc.git            && break; done
 
 BASE_VER=${HAPROXY_VERSION#v}
 MAJOR_VER=$(echo "$BASE_VER" | cut -d. -f1-2)
 HAPROXY_GIT_URL="https://git.haproxy.org/git/haproxy-${MAJOR_VER}.git/"
 echo "Targeting haproxy ${HAPROXY_VERSION} Repo: $HAPROXY_GIT_URL"
-git clone --recursive --depth 1 --branch "v$BASE_VER" "$HAPROXY_GIT_URL" "haproxy-$BASE_VER"
+
+while true; do git clone --recursive --depth 1 --branch "v$BASE_VER" "$HAPROXY_GIT_URL" "haproxy-$BASE_VER"             && break; done
 
 
 arch="$(uname -m)"
