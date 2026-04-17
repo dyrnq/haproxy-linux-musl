@@ -16,7 +16,8 @@ PCRE2_VERSION="10.47"
 OPENSSL_VERSION="3.5.6"
 ZLIB_VERSION="v1.3.2"
 LUA_VERSION="v5.4.8"
-
+OPENSSL_AWSLC_VERSION="v1.72.0"
+USE_OPENSSL_AWSLC="0"
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -67,6 +68,12 @@ while [ $# -gt 0 ]; do
         --LUA_VERSION|--lua-version)
             LUA_VERSION="$2"
             ;;
+        --OPENSSL_AWSLC_VERSION|--openssl-awslc-version)
+            OPENSSL_AWSLC_VERSION="$2"
+            ;;
+        --USE_OPENSSL_AWSLC)
+            USE_OPENSSL_AWSLC="$2"
+            ;;
         --*)
             echo "Illegal option $1"
             ;;
@@ -75,9 +82,11 @@ while [ $# -gt 0 ]; do
 done
 
 
-latest_tag=" --tag $repo/$image_name:$version"
+latest_tag=" --tag ${repo}/${image_name}:${version}"
 
-
+if [ "1" = "${USE_OPENSSL_AWSLC}" ]; then
+latest_tag=" --tag ${repo}/${image_name}:awslc-${version}"
+fi
 
 docker buildx build \
 --platform ${platforms} \
@@ -87,6 +96,8 @@ docker buildx build \
 --build-arg OPENSSL_VERSION=${OPENSSL_VERSION} \
 --build-arg ZLIB_VERSION=${ZLIB_VERSION} \
 --build-arg LUA_VERSION=${LUA_VERSION} \
+--build-arg OPENSSL_AWSLC_VERSION=${OPENSSL_AWSLC_VERSION} \
+--build-arg USE_OPENSSL_AWSLC=${USE_OPENSSL_AWSLC} \
 --file ${docker_file} . \
 ${latest_tag}
 
