@@ -144,6 +144,19 @@ if [ "${USE_OPENSSL_AWSLC}" = "1" ];then
     ssl_libs="${INSTALL_DIR}/lib/libssl.a ${INSTALL_DIR}/lib/libcrypto.a"
 fi
 
+# USE_LUA=1 LUA_INC=${WORK_DIR}/lua LUA_LIB=${WORK_DIR}/lua
+# ${WORK_DIR}/lua/liblua.a
+
+# USE_LUA=1 LUA_INC=${WORK_DIR}/lua LUA_LIB=${WORK_DIR}/lua
+# ${WORK_DIR}/lua/liblua.a
+
+lua_args="USE_LUA=1 LUA_INC=${WORK_DIR}/lua LUA_LIB=${WORK_DIR}/lua"
+lua_libs="${WORK_DIR}/lua/liblua.a"
+if [ "${arch}" = "aarch64" ]; then
+    lua_args="";
+    lua_libs="";
+fi
+
 
 make -j$(nproc) \
 TARGET=linux-musl \
@@ -152,11 +165,10 @@ USE_GETADDRINFO=1  \
 USE_QUIC=1 \
 USE_PCRE2_JIT=1 \
 USE_PCRE2=1 PCRE2_INC=$INSTALL_DIR/include PCRE2_LIB=$INSTALL_DIR/lib \
-${ssl_args} \
+${ssl_args} ${lua_args} \
 USE_ZLIB=1 ZLIB_INC=$INSTALL_DIR/include ZLIB_LIB=$INSTALL_DIR/lib \
-USE_LUA=1 LUA_INC=${WORK_DIR}/lua LUA_LIB=${WORK_DIR}/lua \
 LDFLAGS="-static -no-pie" \
-ADDLIB="${WORK_DIR}/lua/liblua.a ${ssl_libs} ${INSTALL_DIR}/lib/libpcre2-8.a ${INSTALL_DIR}/lib/libz.a -lpthread -ldl" \
+ADDLIB="${ssl_libs} ${lua_libs} ${INSTALL_DIR}/lib/libpcre2-8.a ${INSTALL_DIR}/lib/libz.a -lpthread -ldl" \
 CC="gcc -static"
 #CFLAGS="-fvect-cost-model=very-cheap"
 
