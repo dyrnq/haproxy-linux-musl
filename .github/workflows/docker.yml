@@ -43,7 +43,7 @@ jobs:
         run: |
           HAPROXY_VERSION="${{ matrix.vers }}"
           BASE_VER=${HAPROXY_VERSION#v}
-          OPENSSL_VERSION=$(docker run -it --rm haproxy:${BASE_VER}-alpine -vvv   |  grep "OpenSSL" |grep version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-z]?')
+          OPENSSL_VERSION=$(docker run --rm haproxy:${BASE_VER}-alpine -vvv   |  grep "OpenSSL" |grep version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-z]?')
           echo ::set-output name=OPENSSL_VERSION::${OPENSSL_VERSION}
 
       - name: Test Dynamic alignment version
