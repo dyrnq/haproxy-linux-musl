@@ -55,24 +55,31 @@ while [ $# -gt 0 ]; do
             ;;
         --HAPROXY_VERSION|--haproxy-version)
             HAPROXY_VERSION="$2"
+            shift
             ;;
         --PCRE2_VERSION|--pcre2-version)
             PCRE2_VERSION="$2"
+            shift
             ;;
         --OPENSSL_VERSION|--openssl-version)
             OPENSSL_VERSION="$2"
+            shift
             ;;
         --ZLIB_VERSION|--zlib-version)
             ZLIB_VERSION="$2"
+            shift
             ;;
         --LUA_VERSION|--lua-version)
             LUA_VERSION="$2"
+            shift
             ;;
         --OPENSSL_AWSLC_VERSION|--openssl-awslc-version)
             OPENSSL_AWSLC_VERSION="$2"
+            shift
             ;;
         --USE_OPENSSL_AWSLC)
             USE_OPENSSL_AWSLC="$2"
+            shift
             ;;
         --*)
             echo "Illegal option $1"
