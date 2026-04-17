@@ -1,0 +1,65 @@
+name: release by version
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - main
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
+      - name: Test version
+        run: |
+          echo ${{ steps.get_version.outputs.VERSION }}
+          echo ${{ github.ref }}
+
+
+      - name: Fetch binary
+        shell: bash
+        run: |
+          ver="${{ steps.get_version.outputs.VERSION }}"
+          echo "${ver}"
+          mkdir -p /tmp/amd64
+          mkdir -p /tmp/arm64
+          docker run -i --rm --entrypoint="" -v .:/host -v /tmp/amd64:/tmp --platform linux/amd64 ${{ secrets.DOCKER_USERNAME }}/haproxy-linux-musl:${ver} bash -c "cp --verbose --force /usr/local/bin/haproxy /tmp/haproxy-amd64"
+          docker run -i --rm --entrypoint="" -v .:/host -v /tmp/arm64:/tmp --platform linux/arm64 ${{ secrets.DOCKER_USERNAME }}/haproxy-linux-musl:${ver} bash -c "cp --verbose --force /usr/local/bin/haproxy /tmp/haproxy-arm64"
+          pushd /tmp/amd64;
+            cp ./haproxy-amd64 haproxy;
+            tar -cv --xz  -f haproxy-amd64.tar.xz ./haproxy;
+            tar -cv -z    -f haproxy-amd64.tar.gz ./haproxy;
+          popd
+
+          pushd /tmp/arm64;
+            cp ./haproxy-arm64 haproxy;
+            tar -cv --xz  -f haproxy-arm64.tar.xz ./haproxy;
+            tar -cv -z    -f haproxy-arm64.tar.gz ./haproxy;
+          popd
+
+          tree /tmp/amd64
+          tree /tmp/arm64
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body: "Release haproxy ${{ steps.get_version.outputs.VERSION }}.  \n source: https://github.com/haproxy/haproxy/releases/tag/${{ steps.get_version.outputs.VERSION }}"
+          files: |
+            /tmp/amd64/haproxy-amd64
+            /tmp/amd64/haproxy-amd64.tar.xz
+            /tmp/amd64/haproxy-amd64.tar.gz
+            /tmp/arm64/haproxy-arm64
+            /tmp/arm64/haproxy-arm64.tar.xz
+            /tmp/arm64/haproxy-arm64.tar.gz

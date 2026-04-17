@@ -1,0 +1,31 @@
+FROM alpine:3.23.3 as builder
+ARG HAPROXY_VERSION
+ARG PCRE2_VERSION
+ARG OPENSSL_VERSION
+ARG ZLIB_VERSION
+ARG LUA_VERSION
+ENV \
+LANG=en_US.utf8 \
+HAPROXY_VERSION=${HAPROXY_VERSION:-v3.2.0} \
+PCRE2_VERSION=${PCRE2_VERSION:-10.47} \
+OPENSSL_VERSION=${OPENSSL_VERSION:-3.6.2} \
+ZLIB_VERSION=${ZLIB_VERSION:-v1.3.2} \
+LUA_VERSION=${LUA_VERSION:-v5.4.8}
+
+RUN apk add --no-cache curl wget bash
+ADD ./build.sh
+COPY ./build.sh /build.sh
+RUN /bin/bash /build.sh \
+--HAPROXY_VERSION ${HAPROXY_VERSION} \
+--PCRE2_VERSION ${PCRE2_VERSION} \
+--OPENSSL_VERSION ${OPENSSL_VERSION} \
+--ZLIB_VERSION ${ZLIB_VERSION} \
+--LUA_VERSION ${LUA_VERSION}
+
+FROM alpine:3.23.3
+COPY --from=builder /opt/haproxy-static/sbin/haproxy /usr/local/bin/haproxy
+ENTRYPOINT ["haproxy"]
+
+
+
+
