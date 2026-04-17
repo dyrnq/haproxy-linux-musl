@@ -64,17 +64,37 @@ git clone --recursive --depth 1 --branch "v$BASE_VER" "$HAPROXY_GIT_URL" "haprox
 
 arch="$(uname -m)"
 
+if [ "${USE_OPENSSL_AWSLC}" = "1" ];then
+
 echo "Building ${arch} aws-lc (Static)..."
 pushd aws-lc >/dev/null 2>&1 || exit 1
 mkdir build
 pushd build >/dev/null 2>&1 || exit 1
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=0 ..
+cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=0 ..
 make -j$(nproc)
+make install
 popd
 
 echo "Building ${arch} aws-lc end"
 tree ./build
 popd || exit 1
+
+else
+
+
+echo "Building ${arch} OpenSSL (Static)..."
+pushd openssl >/dev/null 2>&1 || exit 1
+./config --prefix=$INSTALL_DIR -static
+make -j"$(nproc)"
+make -j$(nproc) install_sw
+echo "Building ${arch} OpenSSL end"
+tree ${INSTALL_DIR}
+popd || exit 1
+
+
+fi
+
+
 
 
 
@@ -96,14 +116,7 @@ echo "Building ${arch} PCRE2 end"
 tree ${INSTALL_DIR}
 popd || exit 1
 
-echo "Building ${arch} OpenSSL (Static)..."
-pushd openssl >/dev/null 2>&1 || exit 1
-./config --prefix=$INSTALL_DIR -static
-make -j"$(nproc)"
-make -j$(nproc) install_sw
-echo "Building ${arch} OpenSSL end"
-tree ${INSTALL_DIR}
-popd || exit 1
+
 
 
 echo "Building ${arch} lua"
@@ -127,8 +140,8 @@ else
 fi
 
 if [ "${USE_OPENSSL_AWSLC}" = "1" ];then
-    ssl_args="USE_OPENSSL=1 SSL_INC=$WORK_DIR/aws-lc/include SSL_LIB=$WORK_DIR/aws-lc/build/crypto:$WORK_DIR/aws-lc/build/ssl"
-    ssl_libs="$WORK_DIR/aws-lc/build/ssl/libssl.a ${WORK_DIR}/aws-lc/build/crypto/libcrypto.a"
+    ssl_args="USE_OPENSSL=1 SSL_INC=$INSTALL_DIR/include SSL_LIB=${INSTALL_DIR}/lib"
+    ssl_libs="${INSTALL_DIR}/lib/libssl.a ${INSTALL_DIR}/lib/libcrypto.a"
 fi
 
 
