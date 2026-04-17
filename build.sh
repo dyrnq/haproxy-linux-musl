@@ -73,7 +73,7 @@ make -j$(nproc)
 popd
 
 echo "Building ${arch} aws-lc end"
-tree ${INSTALL_DIR}
+tree ./build
 popd || exit 1
 
 
