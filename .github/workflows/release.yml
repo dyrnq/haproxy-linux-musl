@@ -34,8 +34,8 @@ jobs:
           echo "${ver}"
           mkdir -p /tmp/amd64
           mkdir -p /tmp/arm64
-          docker run -i --rm --entrypoint="" -v .:/host -v /tmp/amd64:/tmp --platform linux/amd64 ${{ secrets.DOCKER_USERNAME }}/haproxy-linux-musl:${ver} bash -c "cp --verbose --force /usr/local/bin/haproxy /tmp/haproxy-amd64"
-          docker run -i --rm --entrypoint="" -v .:/host -v /tmp/arm64:/tmp --platform linux/arm64 ${{ secrets.DOCKER_USERNAME }}/haproxy-linux-musl:${ver} bash -c "cp --verbose --force /usr/local/bin/haproxy /tmp/haproxy-arm64"
+          docker run -i --rm --entrypoint="" -v .:/host -v /tmp/amd64:/tmp --platform linux/amd64 ${{ secrets.DOCKER_USERNAME }}/haproxy-linux-musl:${ver} sh -c "cp --verbose --force /usr/local/bin/haproxy /tmp/haproxy-amd64"
+          docker run -i --rm --entrypoint="" -v .:/host -v /tmp/arm64:/tmp --platform linux/arm64 ${{ secrets.DOCKER_USERNAME }}/haproxy-linux-musl:${ver} sh -c "cp --verbose --force /usr/local/bin/haproxy /tmp/haproxy-arm64"
           pushd /tmp/amd64;
             cp ./haproxy-amd64 haproxy;
             tar -cv --xz  -f haproxy-amd64.tar.xz ./haproxy;
