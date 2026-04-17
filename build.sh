@@ -169,7 +169,7 @@ if [ "${arch}" = "aarch64" ]; then
     lua_libs="";
 fi
 
-quic_args=""
+quic_args="USE_QUIC="
 if [ "${USE_QUIC}" = "1" ]; then
     quic_args="USE_QUIC=1"
 fi
