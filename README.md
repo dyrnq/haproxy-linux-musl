@@ -72,3 +72,21 @@ $ readelf -h /lib/x86_64-linux-gnu/libssl3.so |grep Type
 
 - [File Signature Table](https://filesig.search.org/)
 - [List_of_file_signatures List_of_file_signatures](https://en.wikipedia.org/wiki/List_of_file_signatures)
+
+
+
+在 GCC 编译器中，`Position-Independent`（位置无关）和 `-no-pie` 选项直接关系到程序的**内存布局**和**安全性**。
+
+`什么是 Position-Independent Code (PIC) 与 PIE？`
+
+* **PIC (Position-Independent Code)**：这是一项**技术**。它指的是代码中所有对数据或函数的引用都使用**相对地址（Relative Addressing）**，而不是绝对内存地址。这使得一段代码无论被操作系统加载到内存的哪个位置，都能正常执行。
+
+* **PIE (Position-Independent Executable)**：这是一个**结果**。当PIC 技术应用到整个可执行程序（即不仅是库，而是程序本身）时，生成的二进制文件就是 PIE。
+
+
+PIE 的存在主要是为了支持 **ASLR (地址空间布局随机化)**。
+
+* **非 PIE (Traditional)**：程序总是被加载到固定的内存地址（例如 `0x400000`）。攻击者如果想通过“缓冲区溢出”跳转到程序的函数，他不需要猜测，因为地址是死的。
+
+* **PIE (Modern)**：程序每次启动时，操作系统都会随机分配一个新的基地址。攻击者根本不知道函数或代码段到底在哪里，从而大大提高了攻击难度。
+
