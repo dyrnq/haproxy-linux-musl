@@ -58,3 +58,9 @@ ET_CORE（4）：核心文件（Core file）
 在 ELF 文件中，e_type 字段是一个 4 字节的整数，用于标识文件的类型。这个字段在 ELF 文件头中，偏移量为 4 字节。
 
 ET_ 前缀是 ELF 文件格式规范中的一个约定，用于表示 e_type 字段的取值。
+
+
+`file-extension-magic-numbers`
+
+- [File Signature Table](https://filesig.search.org/)
+- [List_of_file_signatures List_of_file_signatures](https://en.wikipedia.org/wiki/List_of_file_signatures)
