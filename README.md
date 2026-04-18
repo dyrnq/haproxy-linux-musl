@@ -29,6 +29,18 @@ scanelf --needed --nobanner --recursive /usr/sbin/haproxy
 ET_DYN libcrypt.so.1,libssl.so.3,libcrypto.so.3,liblua5.4.so.0,libopentracing-c-wrapper.so.0,libpcre2-8.so.0,libjemalloc.so.2,libc.so.6 /usr/sbin/haproxy 
 ```
 
+
+```bash
+$ readelf -h ./haproxy |grep Type
+  Type:                              EXEC (Executable file)
+
+
+$ readelf -h /usr/sbin/haproxy |grep Type
+  Type:                              DYN (Position-Independent Executable file)
+
+```
+
+
 ET_EXEC 和 ET_DYN 中的 ET_ 是 ELF（Executable and Linkable Format）文件头中的一个字段，称为 e_type。
 
 e_type 字段用于标识 ELF 文件的类型，取值如下：
