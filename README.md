@@ -22,24 +22,15 @@ docker run -d --name tmp --entrypoint="" dyrnq/haproxy-linux-musl:v3.2.15 sh -c 
 docker cp tmp:/usr/local/bin/haproxy .
 docker rm -f tmp;
 
-scanelf --needed --nobanner --recursive ./haproxy
+$ scanelf --needed --nobanner --recursive ./haproxy
 ET_EXEC  ./haproxy 
 
-scanelf --needed --nobanner --recursive /usr/sbin/haproxy 
+$ scanelf --needed --nobanner --recursive /usr/sbin/haproxy 
 ET_DYN libcrypt.so.1,libssl.so.3,libcrypto.so.3,liblua5.4.so.0,libopentracing-c-wrapper.so.0,libpcre2-8.so.0,libjemalloc.so.2,libc.so.6 /usr/sbin/haproxy 
+
+$ scanelf --needed --nobanner --recursive /lib/x86_64-linux-gnu/libssl3.so 
+ET_DYN libnss3.so,libnssutil3.so,libplc4.so,libnspr4.so,libc.so.6 /lib/x86_64-linux-gnu/libssl3.so
 ```
-
-
-```bash
-$ readelf -h ./haproxy |grep Type
-  Type:                              EXEC (Executable file)
-
-
-$ readelf -h /usr/sbin/haproxy |grep Type
-  Type:                              DYN (Position-Independent Executable file)
-
-```
-
 
 ET_EXEC 和 ET_DYN 中的 ET_ 是 ELF（Executable and Linkable Format）文件头中的一个字段，称为 e_type。
 
@@ -58,6 +49,23 @@ ET_CORE（4）：核心文件（Core file）
 在 ELF 文件中，e_type 字段是一个 4 字节的整数，用于标识文件的类型。这个字段在 ELF 文件头中，偏移量为 4 字节。
 
 ET_ 前缀是 ELF 文件格式规范中的一个约定，用于表示 e_type 字段的取值。
+
+
+```bash
+$ readelf -h ./haproxy |grep Type
+  Type:                              EXEC (Executable file)
+
+
+$ readelf -h /usr/sbin/haproxy |grep Type
+  Type:                              DYN (Position-Independent Executable file)
+
+$ readelf -h /lib/x86_64-linux-gnu/libssl3.so |grep Type
+  Type:                              DYN (Shared object file)
+
+```
+
+
+`readelf` 可以更加细化的区分出`DYN (Position-Independent Executable file)`和 `DYN (Shared object file)`
 
 
 `file-extension-magic-numbers`
