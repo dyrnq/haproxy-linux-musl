@@ -1,5 +1,5 @@
 name: docker-ci-input
-
+run-name: "Build Version: ${{ inputs.version }} (AWSLC: ${{ inputs.USE_OPENSSL_AWSLC == '1' && 'Enabled' || 'Disabled' }}) by @${{ github.actor }}"
 on:
   workflow_dispatch:
     inputs:
