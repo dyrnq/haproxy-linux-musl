@@ -28,3 +28,21 @@ ET_EXEC  ./haproxy
 scanelf --needed --nobanner --recursive /usr/sbin/haproxy 
 ET_DYN libcrypt.so.1,libssl.so.3,libcrypto.so.3,liblua5.4.so.0,libopentracing-c-wrapper.so.0,libpcre2-8.so.0,libjemalloc.so.2,libc.so.6 /usr/sbin/haproxy 
 ```
+
+ET_EXEC 和 ET_DYN 中的 ET_ 是 ELF（Executable and Linkable Format）文件头中的一个字段，称为 e_type。
+
+e_type 字段用于标识 ELF 文件的类型，取值如下：
+
+```bash
+ET_NONE（0）：未知类型
+ET_REL（1）：可重定位文件（Relocatable file）
+ET_EXEC（2）：可执行文件（Executable file）
+ET_DYN（3）：动态链接库（Dynamic Shared Object）
+ET_CORE（4）：核心文件（Core file）
+```
+
+因此，ET_EXEC 表示可执行文件，而 ET_DYN 表示动态链接库。
+
+在 ELF 文件中，e_type 字段是一个 4 字节的整数，用于标识文件的类型。这个字段在 ELF 文件头中，偏移量为 4 字节。
+
+ET_ 前缀是 ELF 文件格式规范中的一个约定，用于表示 e_type 字段的取值。
