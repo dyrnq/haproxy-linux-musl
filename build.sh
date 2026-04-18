@@ -152,7 +152,7 @@ else
 fi
 
 if [ "${USE_OPENSSL_AWSLC}" = "1" ];then
-    ssl_args="USE_OPENSSL_AWSLC=1 SSL_INC=$INSTALL_DIR/include SSL_LIB=${INSTALL_DIR}/lib"
+    ssl_args="USE_OPENSSL=1 SSL_INC=$INSTALL_DIR/include SSL_LIB=${INSTALL_DIR}/lib"
     ssl_libs="${INSTALL_DIR}/lib/libssl.a ${INSTALL_DIR}/lib/libcrypto.a"
 fi
 
