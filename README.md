@@ -3,15 +3,14 @@
 - [haproxy/wiki/wiki/SSL-Libraries-Support-Status](https://github.com/haproxy/wiki/wiki/SSL-Libraries-Support-Status)
 - [git.haproxy.org](https://git.haproxy.org/)
 
-| version     | git url                                                |
-| ----------- | ------------------------------------------------------ |
-| haproxy-2.8 | <https://git.haproxy.org/?p=haproxy-2.8.git;a=summary> |
-| haproxy-2.9 | <https://git.haproxy.org/?p=haproxy-2.9.git;a=summary> |
-| haproxy-3.0 | <https://git.haproxy.org/?p=haproxy-3.0.git;a=summary> |
-| haproxy-3.1 | <https://git.haproxy.org/?p=haproxy-3.1.git;a=summary> |
-| haproxy-3.2 | <https://git.haproxy.org/?p=haproxy-3.2.git;a=summary> |
-| haproxy-3.3 | <https://git.haproxy.org/?p=haproxy-3.3.git;a=summary> |
-
+| version     | git url                                                | docker-library/haproxy Dockerfile                                                                            |
+| ----------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| haproxy-2.8 | <https://git.haproxy.org/?p=haproxy-2.8.git;a=summary> | [2.8/alpine/Dockerfile](https://github.com/docker-library/haproxy/blob/master/2.8/alpine/Dockerfile) |
+| haproxy-2.9 | <https://git.haproxy.org/?p=haproxy-2.9.git;a=summary> |                                                                                                      |
+| haproxy-3.0 | <https://git.haproxy.org/?p=haproxy-3.0.git;a=summary> | [3.0/alpine/Dockerfile](https://github.com/docker-library/haproxy/blob/master/3.0/alpine/Dockerfile) |
+| haproxy-3.1 | <https://git.haproxy.org/?p=haproxy-3.1.git;a=summary> | [3.1/alpine/Dockerfile](https://github.com/docker-library/haproxy/blob/master/3.1/alpine/Dockerfile) |
+| haproxy-3.2 | <https://git.haproxy.org/?p=haproxy-3.2.git;a=summary> | [3.2/alpine/Dockerfile](https://github.com/docker-library/haproxy/blob/master/3.2/alpine/Dockerfile) |
+| haproxy-3.3 | <https://git.haproxy.org/?p=haproxy-3.3.git;a=summary> | [3.3/alpine/Dockerfile](https://github.com/docker-library/haproxy/blob/master/3.3/alpine/Dockerfile) |
 
 compared with debian `apt install haproxy -y`
 
@@ -23,12 +22,12 @@ docker cp tmp:/usr/local/bin/haproxy .
 docker rm -f tmp;
 
 $ scanelf --needed --nobanner --recursive ./haproxy
-ET_EXEC  ./haproxy 
+ET_EXEC  ./haproxy
 
-$ scanelf --needed --nobanner --recursive /usr/sbin/haproxy 
-ET_DYN libcrypt.so.1,libssl.so.3,libcrypto.so.3,liblua5.4.so.0,libopentracing-c-wrapper.so.0,libpcre2-8.so.0,libjemalloc.so.2,libc.so.6 /usr/sbin/haproxy 
+$ scanelf --needed --nobanner --recursive /usr/sbin/haproxy
+ET_DYN libcrypt.so.1,libssl.so.3,libcrypto.so.3,liblua5.4.so.0,libopentracing-c-wrapper.so.0,libpcre2-8.so.0,libjemalloc.so.2,libc.so.6 /usr/sbin/haproxy
 
-$ scanelf --needed --nobanner --recursive /lib/x86_64-linux-gnu/libssl3.so 
+$ scanelf --needed --nobanner --recursive /lib/x86_64-linux-gnu/libssl3.so
 ET_DYN libnss3.so,libnssutil3.so,libplc4.so,libnspr4.so,libc.so.6 /lib/x86_64-linux-gnu/libssl3.so
 ```
 
@@ -79,14 +78,12 @@ $ readelf -h /lib/x86_64-linux-gnu/libssl3.so |grep Type
 
 `什么是 Position-Independent Code (PIC) 与 PIE？`
 
-* **PIC (Position-Independent Code)**：这是一项**技术**。它指的是代码中所有对数据或函数的引用都使用**相对地址（Relative Addressing）**，而不是绝对内存地址。这使得一段代码无论被操作系统加载到内存的哪个位置，都能正常执行。
+- **PIC (Position-Independent Code)**：这是一项**技术**。它指的是代码中所有对数据或函数的引用都使用**相对地址（Relative Addressing）**，而不是绝对内存地址。这使得一段代码无论被操作系统加载到内存的哪个位置，都能正常执行。
 
-* **PIE (Position-Independent Executable)**：这是一个**结果**。当PIC 技术应用到整个可执行程序（即不仅是库，而是程序本身）时，生成的二进制文件就是 PIE。
-
+- **PIE (Position-Independent Executable)**：这是一个**结果**。当PIC 技术应用到整个可执行程序（即不仅是库，而是程序本身）时，生成的二进制文件就是 PIE。
 
 PIE 的存在主要是为了支持 **ASLR (地址空间布局随机化)**。
 
-* **非 PIE (Traditional)**：程序总是被加载到固定的内存地址（例如 `0x400000`）。攻击者如果想通过“缓冲区溢出”跳转到程序的函数，他不需要猜测，因为地址是死的。
+- **非 PIE (Traditional)**：程序总是被加载到固定的内存地址（例如 `0x400000`）。攻击者如果想通过“缓冲区溢出”跳转到程序的函数，他不需要猜测，因为地址是死的。
 
-* **PIE (Modern)**：程序每次启动时，操作系统都会随机分配一个新的基地址。攻击者根本不知道函数或代码段到底在哪里，从而大大提高了攻击难度。
-
+- **PIE (Modern)**：程序每次启动时，操作系统都会随机分配一个新的基地址。攻击者根本不知道函数或代码段到底在哪里，从而大大提高了攻击难度。
