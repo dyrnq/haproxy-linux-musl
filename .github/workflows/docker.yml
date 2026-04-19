@@ -43,21 +43,22 @@ jobs:
         run: |
           HAPROXY_VERSION="${{ matrix.vers }}"
           BASE_VER=${HAPROXY_VERSION#v}
-          OPENSSL_VERSION=$(docker run --rm haproxy:${BASE_VER}-alpine -vv   |  grep "OpenSSL" |grep version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-z]?')
-          #echo ::set-output name=OPENSSL_VERSION::${OPENSSL_VERSION}
+          # OPENSSL_VERSION=$(docker run --rm haproxy:${BASE_VER}-alpine -vv   |  grep "OpenSSL" |grep version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-z]?')
 
-          echo "OPENSSL_VERSION=${OPENSSL_VERSION}" >> $GITHUB_OUTPUT
 
-          if docker run --rm haproxy:${BASE_VER}-alpine -vv   |  grep "USE_QUIC"; then
-            echo "USE_QUIC=1" >> $GITHUB_OUTPUT
-          else
-            echo "USE_QUIC=0" >> $GITHUB_OUTPUT
-          fi
+          # echo "OPENSSL_VERSION=${OPENSSL_VERSION}" >> $GITHUB_OUTPUT
+
+          # if docker run --rm haproxy:${BASE_VER}-alpine -vv   |  grep "USE_QUIC"; then
+          #   echo "USE_QUIC=1" >> $GITHUB_OUTPUT
+          # else
+          #   echo "USE_QUIC=0" >> $GITHUB_OUTPUT
+          # fi
 
       - name: Test Dynamic alignment version
         run: |
           echo ${{ steps.alignment.outputs.OPENSSL_VERSION }}
           echo ${{ steps.alignment.outputs.USE_QUIC }}
+          echo "--HAPROXY_VERSION ${{ matrix.vers }}"
 
       - name: Build dockerfile (without push)
         run: |
@@ -67,9 +68,7 @@ jobs:
             dynamic_args+=("--OPENSSL_VERSION" "${OPENSSL_VERSION}")
           fi
 
-          if [ -n "${{ steps.alignment.outputs.USE_QUIC }}" ]; then
-            dynamic_args+=("--USE_QUIC" "${{ steps.alignment.outputs.USE_QUIC }}")
-          fi
+
 
           ./buildx.sh --push false --repo ${{ secrets.DOCKER_USERNAME }} --HAPROXY_VERSION ${{ matrix.vers }} ${dynamic_args[*]}
 
@@ -88,7 +87,5 @@ jobs:
             dynamic_args+=("--OPENSSL_VERSION" "${OPENSSL_VERSION}")
           fi
 
-          if [ -n "${{ steps.alignment.outputs.USE_QUIC }}" ]; then
-            dynamic_args+=("--USE_QUIC" "${{ steps.alignment.outputs.USE_QUIC }}")
-          fi
+
           ./buildx.sh --push true --repo ${{ secrets.DOCKER_USERNAME }} --HAPROXY_VERSION ${{ matrix.vers }} ${dynamic_args[*]}

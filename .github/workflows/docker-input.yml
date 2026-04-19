@@ -43,16 +43,15 @@ jobs:
         run: |
           HAPROXY_VERSION="${{ github.event.inputs.version }}"
           BASE_VER=${HAPROXY_VERSION#v}
-          OPENSSL_VERSION=$(docker run --rm haproxy:${BASE_VER}-alpine -vv   |  grep "OpenSSL" |grep version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-z]?')
-          #echo ::set-output name=OPENSSL_VERSION::${OPENSSL_VERSION}
+          # OPENSSL_VERSION=$(docker run --rm haproxy:${BASE_VER}-alpine -vv   |  grep "OpenSSL" |grep version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-z]?')
 
-          echo "OPENSSL_VERSION=${OPENSSL_VERSION}" >> $GITHUB_OUTPUT
+          # echo "OPENSSL_VERSION=${OPENSSL_VERSION}" >> $GITHUB_OUTPUT
 
-          if docker run --rm haproxy:${BASE_VER}-alpine -vv   |  grep "USE_QUIC"; then
-            echo "USE_QUIC=1" >> $GITHUB_OUTPUT
-          else
-            echo "USE_QUIC=0" >> $GITHUB_OUTPUT
-          fi
+          # if docker run --rm haproxy:${BASE_VER}-alpine -vv   |  grep "USE_QUIC"; then
+          #   echo "USE_QUIC=1" >> $GITHUB_OUTPUT
+          # else
+          #   echo "USE_QUIC=0" >> $GITHUB_OUTPUT
+          # fi
 
 
 
@@ -75,9 +74,7 @@ jobs:
             dynamic_args+=("--USE_QUIC" "1")
           else
 
-          if [ -n "${{ steps.alignment.outputs.USE_QUIC }}" ]; then
-            dynamic_args+=("--USE_QUIC" "${{ steps.alignment.outputs.USE_QUIC }}")
-          fi
+
 
           fi
 

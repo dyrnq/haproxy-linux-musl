@@ -39,26 +39,11 @@ jobs:
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
-      # - name: Dynamic alignment version
-      #   id: alignment
-      #   run: |
-      #     HAPROXY_VERSION="${{ matrix.vers }}"
-      #     BASE_VER=${HAPROXY_VERSION#v}
-      #     OPENSSL_VERSION=$(docker run --rm haproxy:${BASE_VER}-alpine -vv   |  grep "OpenSSL" |grep version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[a-z]?')
-      #     echo ::set-output name=OPENSSL_VERSION::${OPENSSL_VERSION}
 
-      # - name: Test Dynamic alignment version
-      #   run: |
-      #     echo ${{ steps.alignment.outputs.OPENSSL_VERSION }}
 
       - name: Build dockerfile (without push)
         run: |
           dynamic_args=()
-          # OPENSSL_VERSION="${{ steps.alignment.outputs.OPENSSL_VERSION }}"
-          # if [ -n "${OPENSSL_VERSION}" ]; then
-          #   dynamic_args+=(--OPENSSL_VERSION ${OPENSSL_VERSION})
-          # fi
-
           dynamic_args+=("--USE_OPENSSL_AWSLC" "1")
           dynamic_args+=("--USE_QUIC" "1")
 
@@ -74,10 +59,6 @@ jobs:
       - name: Build dockerfile (with push)
         run: |
           dynamic_args=()
-          # OPENSSL_VERSION="${{ steps.alignment.outputs.OPENSSL_VERSION }}"
-          # if [ -n "${OPENSSL_VERSION}" ]; then
-          #   dynamic_args+(--OPENSSL_VERSION ${OPENSSL_VERSION})
-          # fi
           dynamic_args+=("--USE_OPENSSL_AWSLC" "1")
           dynamic_args+=("--USE_QUIC" "1")
           ./buildx.sh --push true --repo ${{ secrets.DOCKER_USERNAME }} --HAPROXY_VERSION ${{ matrix.vers }} ${dynamic_args[*]}
