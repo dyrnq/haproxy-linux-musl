@@ -205,9 +205,20 @@ quic_args="USE_QUIC="
 if [ "${USE_QUIC}" = "1" ]; then
     quic_args="USE_QUIC=1"
 else
-    if [[ ${HAPROXY_VERSION} =~ ^v3 ]]; then
+
+    # include/haproxy/quic_tls-t.h:272:37: error: field 'level' has incomplete type
+    # v3.0.9 do NOT open USE_QUIC=1
+    version=${HAPROXY_VERSION#v}
+    major_version=$(echo $version | cut -d '.' -f 1)
+    minor_version=$(echo $version | cut -d '.' -f 2)
+
+    version_number=$((major_version * 10 + minor_version))
+    if [ $version_number -gt 30 ]; then
         quic_args="USE_QUIC=1"
     fi
+    echo "version_number=${version_number} ${quic_args}"
+    
+
 fi
 
 make -j$(nproc) \
