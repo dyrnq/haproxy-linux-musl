@@ -63,7 +63,7 @@ pushd $WORK_DIR >/dev/null 2>&1 || exit 1
 while true; do git clone --recursive --depth 1 -b $ZLIB_VERSION            https://github.com/madler/zlib.git           && break; done
 while true; do git clone --recursive --depth 1 -b pcre2-$PCRE2_VERSION     https://github.com/PCRE2Project/pcre2.git    && break; done
 while true; do git clone --recursive --depth 1 -b openssl-$OPENSSL_VERSION https://github.com/openssl/openssl.git       && break; done
-while true; do git clone --recursive --depth 1 -b $LUA_VERSION             https://github.com/lua/lua.git               && break; done
+
 while true; do git clone --recursive --depth 1 -b $OPENSSL_AWSLC_VERSION   https://github.com/aws/aws-lc.git            && break; done
 
 BASE_VER=${HAPROXY_VERSION#v}
@@ -131,12 +131,7 @@ popd || exit 1
 
 
 
-echo "Building ${arch} lua"
-pushd lua >/dev/null 2>&1 || exit 1
-make -j"$(nproc)"
-echo "Building ${arch} lua end"
-tree .
-popd || exit 1
+
 
 
 echo "Building ${arch} HAProxy (Full Static)..."
@@ -162,11 +157,46 @@ fi
 # USE_LUA=1 LUA_INC=${WORK_DIR}/lua LUA_LIB=${WORK_DIR}/lua
 # ${WORK_DIR}/lua/liblua.a
 
-lua_args="USE_LUA=1 LUA_INC=${WORK_DIR}/lua LUA_LIB=${WORK_DIR}/lua"
-lua_libs="${WORK_DIR}/lua/liblua.a"
-if [ "${arch}" = "aarch64" ]; then
-    lua_args="";
-    lua_libs="";
+if [[ "${LUA_VERSION}" == *-dev* ]]; then
+    # apk add lua5.4-dev
+    lua_pkg="lua${LUA_VERSION}"
+
+    if [[ "$LUA_VERSION" =~ ^lua([0-9]+\.[0-9]+)-dev$ ]]; then
+        lua_pkg="${LUA_VERSION}"
+    fi
+
+
+    apk add --no-cache "${lua_pkg}"
+    
+    lua_ver_no="${LUA_VERSION#lua}"
+    lua_ver_no="${lua_ver_no%-dev}"
+    echo "lua_ver_no=${lua_ver_no}"
+
+    # /usr/lib/lua5.4/liblua.a
+    # /usr/include/lua5.4/lua.h
+
+    lua_inc_path="/usr/include/lua${lua_ver_no}"
+    lua_lib_path="/usr/lib/lua${lua_ver_no}"
+
+    lua_args="USE_LUA=1 LUA_INC=${lua_inc_path} LUA_LIB=${lua_lib_path}"
+    lua_libs="${lua_lib_path}/liblua.a"
+
+else
+    while true; do git clone --recursive --depth 1 -b $LUA_VERSION             https://github.com/lua/lua.git               && break; done
+
+    echo "Building ${arch} lua"
+    pushd lua >/dev/null 2>&1 || exit 1
+    make -j"$(nproc)"
+    echo "Building ${arch} lua end"
+    tree .
+    popd || exit 1
+
+    lua_args="USE_LUA=1 LUA_INC=${WORK_DIR}/lua LUA_LIB=${WORK_DIR}/lua"
+    lua_libs="${WORK_DIR}/lua/liblua.a"
+    if [ "${arch}" = "aarch64" ]; then
+        lua_args="";
+        lua_libs="";
+    fi
 fi
 
 quic_args="USE_QUIC="
@@ -176,6 +206,7 @@ fi
 
 make -j$(nproc) \
 TARGET=linux-musl \
+USE_PROMEX=1 \
 USE_PTHREAD_EMULATION=1 \
 USE_GETADDRINFO=1  \
 ${quic_args} \
