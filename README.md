@@ -15,9 +15,9 @@
 compared with debian `apt install haproxy -y`
 
 ```bash
-
+ver="v3.2.15"
 docker rm -f tmp;
-docker run -d --name tmp --entrypoint="" dyrnq/haproxy-linux-musl:v3.2.15 sh -c "sleep 1h;"
+docker run -d --name tmp --entrypoint="" dyrnq/haproxy-linux-musl:${ver} sh -c "sleep 1h;"
 docker cp tmp:/usr/local/bin/haproxy .
 docker rm -f tmp;
 
