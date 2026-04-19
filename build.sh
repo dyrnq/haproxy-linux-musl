@@ -186,6 +186,8 @@ else
 
     echo "Building ${arch} lua"
     pushd lua >/dev/null 2>&1 || exit 1
+    ## remove -march=native
+    sed -i 's/-march=native//g' makefile
     make -j"$(nproc)"
     echo "Building ${arch} lua end"
     tree .
@@ -200,7 +202,7 @@ else
 fi
 
 quic_args="USE_QUIC="
-if [ "${USE_QUIC}" = "1" ]; then
+if [[ ${HAPROXY_VERSION} =~ ^v3 ]]; then
     quic_args="USE_QUIC=1"
 fi
 
