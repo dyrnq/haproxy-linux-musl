@@ -202,8 +202,12 @@ else
 fi
 
 quic_args="USE_QUIC="
-if [[ ${HAPROXY_VERSION} =~ ^v3 ]]; then
+if [ "${USE_QUIC}" = "1" ]; then
     quic_args="USE_QUIC=1"
+else
+    if [[ ${HAPROXY_VERSION} =~ ^v3 ]]; then
+        quic_args="USE_QUIC=1"
+    fi
 fi
 
 make -j$(nproc) \
